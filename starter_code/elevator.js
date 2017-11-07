@@ -5,7 +5,7 @@ class Elevator {
     this.requests = [];
     this.direction = 'up';
     this.waitingList = [];
-    this.passenger = [];
+    this.passengers = [];
   }
 
   start() {
@@ -18,19 +18,38 @@ class Elevator {
     clearInterval(this.interval)
   }
 
-  update() {
+  update(passenger) {
     this.log();
     if (this.floor < 10 && this.direction == 'up') {
       this.floorUp()
-    }else if (this.floor == 0){
+    } else if (this.floor == 0) {
       this.floorUp()
-    }else{
+    } else {
       this.floorDown()
+    }
+    this._passengersEnter(passenger);
+    this._passengersLeave(passenger);
+  }
+
+  _passengersEnter(passenger) {
+    for (var i = 0; i < this.waitingList.length; i++) {
+      if (this.waitingList[i].originFloor == this.floor) {
+        this.passengers.push(passenger);
+        this.waitingList.splice(passenger);
+        this.requests.push(passenger)
+        console.log(`${passenger.name} has entered the elevator. `);
+      }
     }
   }
 
-  _passengersEnter() { }
-  _passengersLeave() { }
+  _passengersLeave(passenger) {
+    for (var i = 0; i < this.passengers.length; i++) {
+      if (this.passengers[i] == this.floor) {
+        this.passengers.splice(this.passengers[i]);
+        console.log(`${passenger.name} has left the elevator. `);
+      }
+    }
+  }
 
   floorUp() {
     this.direction = 'up';
@@ -41,9 +60,11 @@ class Elevator {
     this.direction = 'down';
     this.floor -= 1;
   }
-  call() {
-    this.requests.push()
+  call(passenger) {
+    this.waitingList.push(passenger);
+    this.requests.push(passenger)
   }
+
   log() {
     console.log('direction ' + this.direction + ' ' + 'floor ' + this.floor)
   }
